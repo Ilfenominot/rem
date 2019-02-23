@@ -7,7 +7,7 @@ table.dataTable td.selected {
 /* datatable row hover */
 table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 background-color: #a3a3a3 !important; /* v_light_gray */
-cursor: pointer; !important}
+cursor: pointer !important;}
 
 /* datatable border color */
 table.dataTable {
