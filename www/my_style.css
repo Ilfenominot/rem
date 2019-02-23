@@ -1,0 +1,19 @@
+/* datatable selected */
+table.dataTable tr.selected td, 
+table.dataTable td.selected {
+	background-color: #00b099 !important; /* from accent pallette */
+	}
+
+/* datatable row hover */
+table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
+background-color: #a3a3a3 !important; /* v_light_gray */
+cursor: pointer; !important}
+
+/* datatable border color */
+table.dataTable {
+  border-collapse: collapse;
+}
+
+table.dataTable, td{
+  border: 3px solid #B69A5B;
+}
