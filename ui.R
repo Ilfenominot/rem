@@ -30,7 +30,8 @@ title = 'REM',
        # Sidebar with a slider input for number of bins 
        sidebarLayout(
          sidebarPanel(
-           selectInput('easy_workdays',
+           textOutput("current_time")
+           , selectInput('easy_workdays',
                        'Weekday(s)',
                        multiple=TRUE,
                        workdays)
@@ -55,11 +56,8 @@ title = 'REM',
   tabPanel(
     'About/Help', icon = icon("question-circle")
     , p("1. Conversation suggestions")
-    ),
-  tabPanel(
-    textOutput("current_time")
-    # bookmarkButton()
-  )
+    , bookmarkButton()
+    )
 )
 )
   )
