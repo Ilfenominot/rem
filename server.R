@@ -14,6 +14,8 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # Sign-in tab ##########################################################################
+  
   observeEvent(input$sign_in, {
     
     if(input$ou_email == "noahpollock@oakland.edu"){
@@ -35,10 +37,22 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  
+  # Schedule tab ##################################################################################
+  
   output$current_time <- renderText({
     invalidateLater(1000, session)
     paste("The current time is", Sys.time())
   })
+  
+  # Analytics tab ##################################################################################
+  
+  
+  # Help tab ########################################################################################
+  
+  # show Random Employee Meetup, move, mingle
+  
+
   
   output$dt_test = DT::renderDataTable({
     tdata <- date_df %>% 
