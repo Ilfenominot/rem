@@ -6,7 +6,7 @@ table.dataTable td.selected {
 
 /* datatable row hover */
 table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
-background-color: #a3a3a3 !important; /* v_light_gray */
+background-color: #cdcdcd !important; /* v_v_light_gray */
 cursor: pointer !important;}
 
 /* datatable border color */
@@ -16,4 +16,18 @@ table.dataTable {
 
 table.dataTable, td{
   border: 3px solid #B69A5B;
+}
+
+/* Lines after major Headers */
+h1{
+  border-bottom:5px solid #B69A5B; /* ou gold */
+  padding-bottom:2px;
+}
+h2{
+  border-bottom:3px solid #CCC; /* gray */
+  padding-bottom:3px;
+}
+h3{
+  border-bottom:1px solid #CCC;
+  padding-bottom:3px;
 }
