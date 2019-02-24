@@ -4,6 +4,7 @@ library(shiny)
 library(DT)
 library(dplyr)
 library(tidyr)
+library(lubridate)
 library(shinythemes)
 library(googlesheets)
 
@@ -15,26 +16,21 @@ library(googlesheets)
 # ss$sheet_key # 10kYZGTfXquVUwvBXH-8M-p01csXN6MNuuTzxnDdy3Pk
 
 # # NEED TO UNCOMMENT WHEN READY TO CALL GOOGLESHEETS!!!!!!!!!!
-# gs_auth(token = "shiny_app_token.rds")
-# sheet_key <- "1YzlKt38qd6PbpRpucVabS6Zdb8VuyVeTGm0dE2t85fo"
-# ss <- gs_key(sheet_key)
+# connect to Google Sheets worksheet ##########################################
+gs_auth(token = "shiny_app_token.rds")
+sheet_key <- "1YzlKt38qd6PbpRpucVabS6Zdb8VuyVeTGm0dE2t85fo"
+ss <- gs_key(sheet_key)
 
-# less polluted to just use gs_read_csv
-# load_gs <- function(sheet = ss, table = "employee") {
-#   gs_read_csv(sheet,table)
-# }
+# read each sheet in as a dataframe
+employee_df <- ss %>%
+  gs_read_csv(ws = "employee") %>%
+  mutate(employee_index = 1:n())
 
-# test <- ss %>%
-#   gs_read_csv(ws = "employee")
+available_df <- ss %>%
+  gs_read_csv(ws = "available")
 
-save_gs <- function(sheet = ss, data, table = "employee") {
-  
-  ## integrity constraints
-  # 
-  
-  # Add the data as a new row if integrity constraints are met
-  gs_add_row(sheet, input = data)
-}
+################################################################################
+
 
 # time dimensions
 workdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday")
@@ -45,11 +41,14 @@ month_df <- data.frame(
   abb = month.abb
 )
 
+# will eventually be a function pulling dates for current term
+dates_in_term_seq <- seq(as.Date("2019-01-01"),as.Date("2019-04-30"),by=1)
+
 # date_df should end before spreading
 # this should be calendar_df
 date_df <- data.frame(
   stringsAsFactors = FALSE
-  , date = seq(as.Date("2019-01-01"),as.Date("2019-04-30"),by=1)
+  , date = dates_in_term_seq
 ) %>%
   mutate(month = months(date),
          weekday = factor(
@@ -69,7 +68,7 @@ date_df <- data.frame(
 # for showing actual dates respective to day of year selected in dt
 date_df_full <- data.frame(
   stringsAsFactors = FALSE
-  , date = seq(as.Date("2019-01-01"),as.Date("2019-04-30"),by=1)
+  , date = dates_in_term_seq
 ) %>%
   mutate(month = factor(months(date),levels = month.name),
          weekday = factor(
@@ -77,6 +76,9 @@ date_df_full <- data.frame(
            ,levels = c("Monday","Tuesday","Wednesday","Thursday","Friday")),
          week_of_year = strftime(date,format = "%V")
          ) %>%
+  left_join(month_df,by=c("month" = "full")) %>%
+  mutate(month = factor(month,levels = month.name)) %>%
+  select(month,abb,everything()) %>% # reorder columns
   filter(!is.na(weekday)) %>% #remove saturday and sunday
   arrange(weekday) %>%
   group_by(weekday) %>%
@@ -119,5 +121,14 @@ options(shiny.maxRequestSize=1000^3,
           dom = 't'
         ))
 
-enableBookmarking(store = "url")
+# testing ########################################################################################
+
+# might be able to only send certain googlesheet queries after the user closes the app.
+# session$onSessionEnded(function() {
+# #   dbDisconnect(db)
+# gs_add_row ...
+# })
+
+# enableBookmarking(store = "url")
+
 

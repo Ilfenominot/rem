@@ -7,17 +7,16 @@ shinyUI(
     tags$link(rel = "stylesheet", type = "text/css", href = "my_style.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Roboto:300italic,400,700"),
     style="font-family: 'Roboto';",
-navbarPage(
+navbarPage(id = "tabs",
   theme = shinytheme("cosmo"),
-title = 'REM',
+title = p(strong("REM"),style=paste0("color:",ou_gold)),
   tabPanel(
     'Sign-In', icon = icon("user")
     , textInput('ou_email',
                 'OU Email',
+                value = 'noahpollock@oakland.edu',
                 placeholder = 'example@oakland.edu')
-    , p("1. identity and contact: name, email, and office phnoe")
     , actionButton("sign_in", "Sign-In / Sign-Up")
-    
     ),
 
   tabPanel(
@@ -30,21 +29,24 @@ title = 'REM',
        # Sidebar with a slider input for number of bins 
        sidebarLayout(
          sidebarPanel(
-           textOutput("current_time")
+           selectInput("timeslot", label = h3("Timeslot"), 
+                       choices = list("11:00 - 12:00" = 11, "12:00 - 1:00" = 12, "1:00 - 2:00" = 13), 
+                       selected = 12)
+           , textOutput("current_time")
            , selectInput('easy_workdays',
                        'Weekday(s)',
                        multiple=TRUE,
                        workdays)
            , verbatimTextOutput('out_easy_workdays')
+           , verbatimTextOutput("send_to_gs")
            , verbatimTextOutput("dt_select_test")
            , verbatimTextOutput("dt_select_test2")
            # , submitButton("Submit") # delays ALL inputs on page until press
            , actionButton("submit_sched", "Submit")
          ),
          
-         # Show a plot of the generated distribution
          mainPanel(
-           DT::dataTableOutput("dt_test")
+           DT::dataTableOutput("calendar_dt")
          )
        )
      )),
@@ -55,7 +57,12 @@ title = 'REM',
     ),
   tabPanel(
     'About/Help', icon = icon("question-circle")
-    , p("1. Conversation suggestions")
+    , h1("Grand Idea Submission")
+    , p("This web application serves a functional prototype to showcase my grand idea submission.")
+    , h3("Conversation suggestions")
+    , tags$li(
+      tags$ul("The basics: How long at OU? What are some exciting projects you've worked on?")
+    )
     , bookmarkButton()
     )
 )
