@@ -30,35 +30,43 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
 
   tabPanel(
     'Schedule', icon = icon("calendar")
-    , fluidPage(
-       sidebarLayout(
-         sidebarPanel(width=3
-          , selectInput("timeslot", label="Timeslot",
-                       choices = list("11:00 - 12:00" = 11, "12:00 - 1:00" = 12, "1:00 - 2:00" = 13), 
-                       selected = 12)
-          , p("Choose all the days that you are available to meet other OU faculty or staff during the selected timeslot.",
-              " If you add days in a timeslot, make sure you click submit before changing timeslots or you will lose
-              your selections.")
-           # , textOutput("current_time")
-           # , selectInput('easy_workdays',
-           #             'Weekday(s)',
-           #             multiple=TRUE,
-           #             workdays)
-           # , verbatimTextOutput('out_easy_workdays')
-           # , verbatimTextOutput("send_to_gs")
-           # , verbatimTextOutput("dt_select_test")
-           # , verbatimTextOutput("dt_select_test2")
-           # , submitButton("Submit") # delays ALL inputs on page until press
-          # , verbatimTextOutput("user_email")
-           , actionButton("submit_sched", "Submit")
-         ),
-         
-         mainPanel(
-           DT::dataTableOutput("calendar_dt")
-           , br(), br()
+    , tabsetPanel(
+        tabPanel("Set Availabilty"
+      , fluidPage(
+         sidebarLayout(
+           sidebarPanel(width=3
+            , selectInput("timeslot", label="Timeslot",
+                         choices = list("11:00 - 12:00" = 11, "12:00 - 1:00" = 12, "1:00 - 2:00" = 13), 
+                         selected = 12)
+            , p("Choose all the days that you are available to meet other OU faculty or staff during the selected timeslot.",
+                " If you add days in a timeslot, make sure you click submit before changing timeslots or you will lose
+                your selections.")
+             # , textOutput("current_time")
+             # , selectInput('easy_workdays',
+             #             'Weekday(s)',
+             #             multiple=TRUE,
+             #             workdays)
+             # , verbatimTextOutput('out_easy_workdays')
+             # , verbatimTextOutput("send_to_gs")
+             # , verbatimTextOutput("dt_select_test")
+             # , verbatimTextOutput("dt_select_test2")
+             # , submitButton("Submit") # delays ALL inputs on page until press
+            # , verbatimTextOutput("user_email")
+             , actionButton("submit_sched", "Submit")
+           
+           ),
+           
+           mainPanel(
+             DT::dataTableOutput("calendar_dt")
+             , br(), br()
+           )
          )
-       )
-     )),
+      )),
+      tabPanel("See Scheduled Meetups"
+               # , shinydashboard::box(title = "Monday, Feb 01 at 11:00 AM")
+               )
+  )),
+
   tabPanel(
     'Analytics', icon = icon("bar-chart")
     , h1("Days with Popular Availability")

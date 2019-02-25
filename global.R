@@ -31,6 +31,7 @@ available_df <- ss %>%
 
 available_df_analytics <- ss %>%
   gs_read_csv(ws = "available")
+
 ################################################################################
 
 
