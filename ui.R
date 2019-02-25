@@ -27,7 +27,7 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
           , selectInput("timeslot", label="Timeslot",
                        choices = list("11:00 - 12:00" = 11, "12:00 - 1:00" = 12, "1:00 - 2:00" = 13), 
                        selected = 12)
-          , p("Choose all the days that you are available to meet other OU faculty or staff in the selected timeslot.",
+          , p("Choose all the days that you are available to meet other OU faculty or staff during the selected timeslot.",
               " If you add days in a timeslot, make sure you click submit before changing timeslots or you will lose
               your selections.")
            # , textOutput("current_time")
@@ -65,7 +65,8 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
     h1("Grand Idea Submission")
     , p("This web application serves as a functional prototype to showcase my grand idea submission."
         , " A production version would include a few more refinements such as approved data storage
-        and retrieval methods, faster response times, and an easier user experience.")
+        and retrieval methods, faster response times, and an easier user experience.
+        Additionally, some advanced features could include Google Calendar integration and automated email reminders.")
     , h3("Conversation suggestions")
     , tags$li(
       tags$ul("The Basics: How long have you been at OU? What do you like to do outside of work?")
