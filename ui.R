@@ -22,22 +22,20 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
   tabPanel(
     'Schedule', icon = icon("calendar")
     , fluidPage(
-       
-       # # page title
-       # titlePanel("Old Faithful Geyser Data"),
-       
-       # Sidebar with a slider input for number of bins 
        sidebarLayout(
-         sidebarPanel(
-           selectInput("timeslot", label = h3("Timeslot"), 
+         sidebarPanel(width=3
+          , selectInput("timeslot", label="Timeslot",
                        choices = list("11:00 - 12:00" = 11, "12:00 - 1:00" = 12, "1:00 - 2:00" = 13), 
                        selected = 12)
-           , textOutput("current_time")
-           , selectInput('easy_workdays',
-                       'Weekday(s)',
-                       multiple=TRUE,
-                       workdays)
-           , verbatimTextOutput('out_easy_workdays')
+          , p("Choose all the days that you are available to meet other OU faculty or staff in the selected timeslot.",
+              " If you add days in a timeslot, make sure you click submit before changing timeslots or you will lose
+              your selections.")
+           # , textOutput("current_time")
+           # , selectInput('easy_workdays',
+           #             'Weekday(s)',
+           #             multiple=TRUE,
+           #             workdays)
+           # , verbatimTextOutput('out_easy_workdays')
            , verbatimTextOutput("send_to_gs")
            , verbatimTextOutput("dt_select_test")
            , verbatimTextOutput("dt_select_test2")
@@ -47,6 +45,7 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
          
          mainPanel(
            DT::dataTableOutput("calendar_dt")
+           , br(), br()
          )
        )
      )),

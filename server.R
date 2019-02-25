@@ -5,6 +5,20 @@ shinyServer(function(input, output, session) {
   
   # Sign-in tab ##########################################################################
   
+  observe({
+    # prepopulate user details if user exists
+    input$sign_in
+    
+    if(input$ou_email %in% employee_df$ou_email){
+      employee_df <- employee_df %>%
+        filter(ou_email==input$ou_email)
+      
+      updateTextInput(session, "full_name",value = employee_df$full_name)
+      updateTextInput(session, "phone",value = employee_df$phone)
+      updateTextInput(session, "job_title",value = employee_df$title)
+      updateTextInput(session, "department",value = employee_df$department)
+    }
+  })
   observeEvent(input$sign_in, {
     
     # if contains @oakland.edu
@@ -33,6 +47,17 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  # hide all other tabs until sign in
+  observe({
+    if(input$sign_in == 0 | is.null(input$sign_in)){
+      hideTab(inputId = "tabs", target = 'Schedule')
+      hideTab(inputId = "tabs", target = 'Analytics')
+    } else {
+      showTab(inputId = "tabs", target = 'Schedule')
+      showTab(inputId = "tabs", target = 'Analytics')
+    }
+  })
+  
   # events/actions when user confirms their id and details
   observeEvent(input$confirm_id, { 
     
@@ -58,12 +83,16 @@ shinyServer(function(input, output, session) {
       gs_add_row(ss, ws = "employee",input = user_details)
     }
     # load user availability data, if any, into schedule
+    available_df <<- available_df %>%
+      filter(ou_email==input$ou_email)
+
     if(input$ou_email %in% available_df$ou_email){
-    available_df <- available_df %>%
-      filter(ou_email==input$ou_email,
-             sequence==max(sequence))
+      available_df <<- available_df %>%
+        filter(hour==input$timeslot) %>%
+        filter(sequence==max(sequence))
+    } else {
+      available_df_sequence <- 0
     }
-    
     # change tabs
     updateTabsetPanel(session, "tabs", "Schedule")
     # and close the modal window
@@ -71,12 +100,38 @@ shinyServer(function(input, output, session) {
   }
   )
   
+  # observe({
+  #   # reset available_df every time timeslot is changed
+  #     # and/or every time data is submitted
+  #   input$timeslot
+  #   input$submit_sched
+  #   
+  #   available_df <- ss %>%
+  #       gs_read_csv(ws = "available") %>%
+  #       filter(hour==input$timeslot) %>%
+  #       filter(sequence==max(sequence))
+  # })
   
   # Schedule tab ##################################################################################
   
+  # available_df <- reactive({
+  #   # load user availability data, if any, into schedule
+  #   f_available_df <- f_available_df %>%
+  #     filter(ou_email==input$ou_email)
+  #   
+  #   if(input$ou_email %in% f_available_df$ou_email){
+  #     f_available_df <- f_available_df %>%
+  #       filter(hour==input$timeslot) %>%
+  #       filter(sequence==max(sequence))
+  #   } else {
+  #     available_df_sequence <- 0
+  #   }
+  #   f_available_df
+  #   })
+  
   output$current_time <- renderText({
     invalidateLater(1000, session)
-    paste("The current time is", Sys.time())
+    paste("Right Now: ", Sys.time())
   })
   
   # scheduling calendar
@@ -89,11 +144,18 @@ shinyServer(function(input, output, session) {
       ungroup() %>%
       select(-week_of_year,-month)
     
-    available_df <- available_df %>% 
-      filter(hour(start)==input$timeslot)
+    # load user availability data, if any, into schedule
+    if(input$ou_email %in% available_df$ou_email){
+    Sys.sleep(5)
+    available_df <<- ss %>%
+      gs_read_csv(ws = "available") %>%
+      filter(hour==input$timeslot,
+             ou_email==input$ou_email) %>%
+      filter(sequence==max(sequence))
+    }
     
     # identify which cells need to be colored
-    if(nrow(available_df)>0){
+    if(nrow(available_df>0)){
       pre_select <- data.frame(
         row_index = NA,
         col_index = NA
@@ -157,7 +219,25 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$submit_sched, {
     # add selections to googlesheet
-    # gs_add_row(ss, table = "available",input = data)
+    starts <- as_datetime(
+      data.frame(
+        date_df_full %>% 
+          select(-month,-abb,-week_of_year))[input$calendar_dt_cells_selected]
+      ,tz = "EST"
+    )
+    
+    hour(starts) <- as.numeric(input$timeslot)
+    
+    if(nrow(available_df>0)) available_df_sequence <- unique(available_df$sequence)
+    
+    send_avail_df <- data.frame(
+      ou_email = input$ou_email
+      , hour = as.numeric(input$timeslot)
+      , sequence = available_df_sequence + 1 # the next sequence
+      , start = starts
+      , end = starts + 60^2
+    )
+    gs_add_row(ss, ws = "available",input = send_avail_df)
     
     # tell the user they're changes are saved.
     showModal(modalDialog(
@@ -221,26 +301,34 @@ shinyServer(function(input, output, session) {
   
   output$send_to_gs <- renderPrint({
     
+    
     starts <- as_datetime(
       data.frame(
         date_df_full %>% 
           select(-month,-abb,-week_of_year))[input$calendar_dt_cells_selected]
-      , tz = "EST"
-    )
-    
+      ,tz = "EST"
+      )
+
     hour(starts) <- as.numeric(input$timeslot)
 
-    data.frame(
+    send_avail_df <- data.frame(
       ou_email = input$ou_email
+      , hour = as.numeric(input$timeslot)
+      , sequence = unique(available_df$sequence) + 1 # the next sequence
       , start = starts
       , end = starts + 60^2
     )
+    send_avail_df
   })
   
   output$dt_select_test = renderPrint(input$calendar_dt_cells_selected)
   
   output$dt_select_test2 = renderPrint({
     data.frame(date_df_full %>% select(-month,-abb,-week_of_year))[input$calendar_dt_cells_selected]
+  })
+  
+  output$button_state = renderPrint({
+    input$confirm_id
   })
   
 })
