@@ -54,20 +54,26 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
     'Analytics', icon = icon("bar-chart")
     , h1("Days with Popular Availability")
     , p("This table showcases days that have proportionately more or less employees indicating that
-        their availability.")
+        they're availabe.")
     , DT::dataTableOutput("analytics_dt")
     # , uiOutput("date_select")
     ),
   tabPanel(
-    'About/Help', icon = icon("question-circle")
-    , h1("Grand Idea Submission")
-    , p("This web application serves a functional prototype to showcase my grand idea submission.")
+    'About/Help', icon = icon("question-circle"),
+    fluidPage(
+      fluidRow(
+    h1("Grand Idea Submission")
+    , p("This web application serves as a functional prototype to showcase my grand idea submission."
+        , " A production version would include a few more refinements such as approved data storage
+        and retrieval methods, faster response times, and an easier user experience.")
     , h3("Conversation suggestions")
     , tags$li(
-      tags$ul("The basics: How long at OU? What are some exciting projects you've worked on?")
+      tags$ul("The Basics: How long have you been at OU? What do you like to do outside of work?")
+      , tags$ul("More Detailed: What are some exciting projects you've worked on?")
+      , tags$ul("Advanced Topics: Do you have an long term goals?")
     )
-    , bookmarkButton()
-    )
+    # , bookmarkButton()
+    )))
 )
 )
   )
