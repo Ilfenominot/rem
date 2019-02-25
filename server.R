@@ -5,8 +5,21 @@ shinyServer(function(input, output, session) {
   
   # Sign-in tab ##########################################################################
   
+  # hide all other tabs until sign in
   observe({
-    # prepopulate user details if user exists
+    if(input$sign_in == 0 | is.null(input$sign_in)){
+      hideTab(inputId = "tabs", target = 'Schedule')
+      hideTab(inputId = "tabs", target = 'Analytics')
+    } else {
+      showTab(inputId = "tabs", target = 'Schedule')
+      showTab(inputId = "tabs", target = 'Analytics')
+      # sign out button that re-hides all tabs but sign_in
+      # showTab(inputId = "tabs", target = 'sign_out')
+    }
+  })
+  
+  # prepopulate user details if user exists
+  observe({
     input$sign_in
     
     if(input$ou_email %in% employee_df$ou_email){
@@ -19,6 +32,8 @@ shinyServer(function(input, output, session) {
       updateTextInput(session, "department",value = employee_df$department)
     }
   })
+  
+  # get and set user details
   observeEvent(input$sign_in, {
     
     # if contains @oakland.edu
@@ -27,16 +42,16 @@ shinyServer(function(input, output, session) {
       title = "Enter or Confirm Your Details",
       textInput('full_name',
                 'Full Name',
-                placeholder = 'Noah Pollock'),
+                placeholder = 'Your Name'),
       textInput('phone',
                 'Phone',
-                placeholder = '248-370-3253'),
+                placeholder = '248-370-####'),
       textInput('job_title',
                 'Job Title',
-                placeholder = 'Assistant Director of Assessment'),
+                placeholder = 'Your Job Title'),
       textInput('department',
                 'Department',
-                placeholder = 'Career Services'),
+                placeholder = 'Your Department'),
       easyClose = FALSE,
       footer = actionButton('confirm_id','Looks Good!')
     ))
@@ -44,19 +59,6 @@ shinyServer(function(input, output, session) {
       showModal(modalDialog(
         title = tags$b("You must enter a valid OU Email!",style="color:red;")
       ))
-    }
-  })
-  
-  # hide all other tabs until sign in
-  observe({
-    if(input$sign_in == 0 | is.null(input$sign_in)){
-      hideTab(inputId = "tabs", target = 'Schedule')
-      hideTab(inputId = "tabs", target = 'Analytics')
-    } else {
-      showTab(inputId = "tabs", target = 'Schedule')
-      showTab(inputId = "tabs", target = 'Analytics')
-      # sign out button that re-hides all tabs but sign_in
-      # showTab(inputId = "tabs", target = 'sign_out')
     }
   })
   
@@ -107,7 +109,10 @@ shinyServer(function(input, output, session) {
   observeEvent(input$timeslot, {
     Sys.sleep(2)
     available_df <<- ss %>%
-      gs_read_csv(ws = "available") 
+      gs_read_csv(ws = "available") %>%
+      filter(hour==input$timeslot,
+             ou_email==input$ou_email) %>%
+      filter(sequence==max(sequence))
   })
   
   output$current_time <- renderText({
@@ -124,17 +129,6 @@ shinyServer(function(input, output, session) {
       mutate(time_index = input$timeslot) %>%
       ungroup() %>%
       select(-week_of_year,-month)
-    
-    # load user availability data, if any, into schedule
-    if(input$ou_email %in% available_df$ou_email){
-    # Sys.sleep(2)
-    available_df <<- available_df %>%
-    # available_df <<- ss %>%
-    #   gs_read_csv(ws = "available") %>%
-      filter(hour==input$timeslot,
-             ou_email==input$ou_email) %>%
-      filter(sequence==max(sequence))
-    }
     
     # identify which cells need to be colored
     if(nrow(available_df)>0){
@@ -189,19 +183,27 @@ shinyServer(function(input, output, session) {
     
     # tell the user to wait while we process
     showModal(modalDialog(
-      title = "Just a moment while we process...",
+      title = HTML(paste0(icon("cog",class = "fa-spin")," Loading...")),
+      "Just a moment while we process your changes.",
       easyClose = FALSE,footer = FALSE
     ))
     
-    # add selections to googlesheet
-    starts <- as_datetime(
-      data.frame(
-        date_df_full %>% 
-          select(-month,-abb,-week_of_year))[input$calendar_dt_cells_selected]
-      ,tz = "EST"
-    )
-    
-    hour(starts) <- as.numeric(input$timeslot)
+    # if there are any selections
+    if(length(input$calendar_dt_cells_selected)>0){
+      # add selections to googlesheet
+      starts <- as_datetime(
+        data.frame(
+          date_df_full %>% 
+            select(-month,-abb,-week_of_year))[input$calendar_dt_cells_selected]
+        ,tz = "EST"
+      )
+      hour(starts) <- as.numeric(input$timeslot)
+      ends <- starts + 60^2
+      
+    } else {
+      starts <- ""
+      ends <- ""
+    }
     
     if(nrow(available_df)>0) available_df_sequence <- unique(available_df$sequence)
     
@@ -210,12 +212,17 @@ shinyServer(function(input, output, session) {
       , hour = as.numeric(input$timeslot)
       , sequence = available_df_sequence + 1 # the next sequence
       , start = starts
-      , end = starts + 60^2
+      , end = ends
     )
     gs_add_row(ss, ws = "available",input = send_avail_df)
     
-    # available_df <<- ss %>%
-    #   gs_read_csv(ws = "available") 
+    # have to reload to reset the sequence counter
+    Sys.sleep(2)
+    available_df <<- ss %>%
+      gs_read_csv(ws = "available") %>%
+      filter(hour==input$timeslot,
+             ou_email==input$ou_email) %>%
+      filter(sequence==max(sequence))
     
     # remove loading message
     removeModal()
@@ -223,7 +230,7 @@ shinyServer(function(input, output, session) {
     # tell the user they're changes are saved.
     showModal(modalDialog(
       title = "Changes Submitted!",
-      # "This is an important message!",
+      "You can exit or continue adding/editing availability.",
       easyClose = TRUE
     ))
   })
@@ -336,7 +343,8 @@ shinyServer(function(input, output, session) {
   output$dt_select_test = renderPrint(input$calendar_dt_cells_selected)
   
   output$dt_select_test2 = renderPrint({
-    data.frame(date_df_full %>% select(-month,-abb,-week_of_year))[input$calendar_dt_cells_selected]
+    is.null(input$calendar_dt_cells_selected)
+    # data.frame(date_df_full %>% select(-month,-abb,-week_of_year))[input$calendar_dt_cells_selected]
   })
   
   output$button_state = renderPrint({
