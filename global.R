@@ -28,6 +28,9 @@ employee_df <- ss %>%
 
 available_df <- ss %>%
   gs_read_csv(ws = "available")
+
+available_df_analytics <- ss %>%
+  gs_read_csv(ws = "available")
 ################################################################################
 
 

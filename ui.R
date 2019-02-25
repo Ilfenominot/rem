@@ -36,10 +36,11 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
            #             multiple=TRUE,
            #             workdays)
            # , verbatimTextOutput('out_easy_workdays')
-           , verbatimTextOutput("send_to_gs")
-           , verbatimTextOutput("dt_select_test")
-           , verbatimTextOutput("dt_select_test2")
+           # , verbatimTextOutput("send_to_gs")
+           # , verbatimTextOutput("dt_select_test")
+           # , verbatimTextOutput("dt_select_test2")
            # , submitButton("Submit") # delays ALL inputs on page until press
+          # , verbatimTextOutput("user_email")
            , actionButton("submit_sched", "Submit")
          ),
          
@@ -51,8 +52,11 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
      )),
   tabPanel(
     'Analytics', icon = icon("bar-chart")
-    , p("Calendar heatmap")
-    , uiOutput("date_select")
+    , h1("Days with Popular Availability")
+    , p("This table showcases days that have proportionately more or less employees indicating that
+        their availability.")
+    , DT::dataTableOutput("analytics_dt")
+    # , uiOutput("date_select")
     ),
   tabPanel(
     'About/Help', icon = icon("question-circle")

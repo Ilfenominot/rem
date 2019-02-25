@@ -146,7 +146,7 @@ shinyServer(function(input, output, session) {
     
     # load user availability data, if any, into schedule
     if(input$ou_email %in% available_df$ou_email){
-    Sys.sleep(5)
+    Sys.sleep(2)
     available_df <<- ss %>%
       gs_read_csv(ws = "available") %>%
       filter(hour==input$timeslot,
@@ -201,20 +201,6 @@ shinyServer(function(input, output, session) {
                   ,backgroundColor = ou_gold) %>%
       formatStyle(names(tdata)
                   ,fontSize = '14pt')
-
-      # formatStyle('Tuesday','time_index',
-      #             backgroundColor = styleEqual(
-      #               unique(tdata$time_index), 'orange')
-      # ) %>%
-      # will have to implement for analytics page
-      # because cannot style two backgrounds in same cell
-      # formatStyle('Tuesday','index',
-      #             background = styleColorBar(
-      #               tdata$index, 'gray')
-      #             , backgroundSize = '100% 10%'
-      #             , backgroundRepeat = 'no-repeat'
-      #             , backgroundPosition = 'center bottom'
-      # )
   }) 
   
   observeEvent(input$submit_sched, {
@@ -248,44 +234,76 @@ shinyServer(function(input, output, session) {
   })
 
   # Analytics tab ##################################################################################
-  
+  output$analytics_dt = DT::renderDataTable({
+    tdata <- date_df %>% 
+      group_by(month) %>%
+      mutate(abb = substr(abb,row_number(),row_number())) %>%
+      bind_cols(index = group_indices(.)) %>%
+      mutate(time_index = input$timeslot) %>%
+      ungroup() %>%
+      select(-week_of_year,-month) %>%
+      bind_cols(
+    
+    available_df_analytics %>%
+      mutate(date = as_date(start)) %>%
+      count(date) %>%
+      right_join(data.frame(date = dates_in_term_seq),by="date") %>%
+      mutate(month = months(date),
+             weekday = factor(
+               weekdays(date)
+               ,levels = workdays),
+             week_of_year = strftime(date,format = "%V")) %>%
+      left_join(month_df,by=c("month" = "full")) %>%
+      mutate(month = factor(month,levels = month.name)) %>%
+      select(month,abb,everything()) %>% # reorder columns
+      filter(!is.na(weekday)) %>% #remove saturday and sunday
+      arrange(weekday) %>%
+      mutate(n = ifelse(is.na(n),0,n)) %>%
+      select(-date) %>%
+      group_by(weekday) %>%
+      spread(weekday,n) %>%
+      select(-month,-abb,-week_of_year)
+      )
+
+    datatable(tdata
+              , colnames = c("",workdays,"index","time_index",workdays)
+              , rownames = FALSE #add to dt global options
+              , selection = "none"
+              , options = list(
+                dom = 't'
+                , pageLength = length(unique(date_df$week_of_year))
+                , columnDefs = list(
+                  list(visible=FALSE, targets=c(ncol(tdata)-1:7)),
+                  list(className = 'dt-center',targets=0:(ncol(tdata)-2))) # center all
+              )
+    ) %>%
+      formatStyle(
+        'abb','index',
+        target = 'row',
+        backgroundColor = styleEqual(
+          unique(tdata$index), rep(c(v_light_tan,'white'),2)) # should always be four months
+      ) %>%
+      formatStyle('abb'
+                  ,fontWeight = 'bold'
+                  ,backgroundColor = ou_gold) %>%
+      formatStyle(names(tdata)
+                  ,fontSize = '14pt') %>%
+    formatStyle(workdays,paste0(workdays,1),
+                background = styleColorBar(
+                  range(0,
+                        max(tdata %>% select_at(.vars = paste0(workdays,1)) %>% 
+                          filter_all(all_vars(!is.na(.)))) + nrow(employee_df)), 'gray')
+                , backgroundSize = '100% 50%'
+                , backgroundRepeat = 'no-repeat'
+                , backgroundPosition = 'center'
+    )
+  }) 
   
   # Help tab ########################################################################################
   
   # show Random Employee Meetup, move, mingle
-  
-  ### Iterate Month Date Selector DataTables #########################################################
-  output$date_select <- renderUI({
-    
-    variable_output <- lapply(unique(date_df$month), function(i) {
-      
-      month_dt <- paste0("table1_",i)
-      DT::dataTableOutput(month_dt)
-      
-    })
-    local_reactive_inspect_vars()
-    do.call(tagList, variable_output)
-  })
-  
-  local_reactive_inspect_vars <- reactive({
-    for (i in unique(date_df$month)) {
-      local({
-        my_i <- i
-        month_dt <- paste0("table1_", my_i)
-        output[[month_dt]] <-  DT::renderDataTable({
-          datatable(date_df %>% filter(month==my_i))
-        })
-      })
-    }
-  })
-  
-  # TESTING #########################################################
 
-  # reactive inputs
-  # file_df <- reactive({
-  #   
-  #   if(input$select_dataset!="Upload"){}
-  #   })
+  # TESTING #########################################################
   
   # Submit Button Actions ################################################################
   
@@ -300,7 +318,6 @@ shinyServer(function(input, output, session) {
     )
   
   output$send_to_gs <- renderPrint({
-    
     
     starts <- as_datetime(
       data.frame(
@@ -329,6 +346,10 @@ shinyServer(function(input, output, session) {
   
   output$button_state = renderPrint({
     input$confirm_id
+  })
+  
+  output$user_email = renderPrint({
+    input$ou_email
   })
   
 })
