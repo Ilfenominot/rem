@@ -89,35 +89,37 @@ shinyServer(function(input, output, session) {
       ungroup() %>%
       select(-week_of_year,-month)
     
-    if(nrow(available_df)>0){
+    available_df <- available_df %>% 
+      filter(hour(start)==input$timeslot)
+    
     # identify which cells need to be colored
-    pre_select <- data.frame(
-      row_index = NA,
-      col_index = NA
-    )
-    for( i in 1:length(workdays)){
-      i_name <- workdays[i]
-      # loop and rbind, then coerce to matrix
-      # test_df <- data.frame(start = as.Date(c("2019-03-04","2019-02-11","2019-02-05"))) %>%
-      #   mutate(month = months(start)) %>%
-      #   left_join(month_df,by=c("month" = "full"))
-      row_index <- which(grepl(paste(as_date(available_df$start), collapse = "|"), date_df_full[[i_name]]))
-      col_index <- if(length(row_index>0)) i
-      
-      pre_select <- rbind(pre_select,data.frame(row_index,col_index))
-    }
-    pre_select <- pre_select %>% 
-      filter(!is.na(row_index)) %>% 
-      data.matrix()
+    if(nrow(available_df)>0){
+      pre_select <- data.frame(
+        row_index = NA,
+        col_index = NA
+      )
+      for( i in 1:length(workdays)){
+        i_name <- workdays[i]
+        row_index <- which(grepl(
+          paste( # create regex or list
+            as_date(available_df$start) # strip out time part of date
+            , collapse = "|"), date_df_full[[i_name]]))
+        col_index <- if(length(row_index>0)) i
+
+        pre_select <- rbind(pre_select,data.frame(row_index,col_index))
+      }
+      pre_select <- pre_select %>%
+        filter(!is.na(row_index)) %>%
+        data.matrix()
+      select_list <- list(target = 'cell', selected = pre_select)
+    } else {
+      select_list <- list(target = 'cell')
     }
     
     datatable(tdata
               , colnames = c("",workdays,"index","time_index")
               , rownames = FALSE #add to dt global options
-              , selection = list(target = 'cell',
-                                 selected = pre_select
-                                 # matrix(c(1,4,4,1),ncol=2,byrow = TRUE)
-                                 )
+              , selection = select_list
               , options = list(
                 dom = 't'
                 , pageLength = length(unique(date_df$week_of_year))
