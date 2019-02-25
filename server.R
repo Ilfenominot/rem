@@ -84,16 +84,16 @@ shinyServer(function(input, output, session) {
     } else {
       gs_add_row(ss, ws = "employee",input = user_details)
     }
+    
     # load user availability data, if any, into schedule
     available_df <<- available_df %>%
       filter(ou_email==input$ou_email)
-
     if(input$ou_email %in% available_df$ou_email){
       available_df <<- available_df %>%
         filter(hour==input$timeslot) %>%
         filter(sequence==max(sequence))
     } else {
-      available_df_sequence <- 0
+      available_df_sequence <<- 0
     }
     # change tabs
     updateTabsetPanel(session, "tabs", "Schedule")
@@ -103,6 +103,12 @@ shinyServer(function(input, output, session) {
   )
   
   # Schedule tab ##################################################################################
+  
+  observeEvent(input$timeslot, {
+    Sys.sleep(2)
+    available_df <<- ss %>%
+      gs_read_csv(ws = "available") 
+  })
   
   output$current_time <- renderText({
     invalidateLater(1000, session)
@@ -121,9 +127,10 @@ shinyServer(function(input, output, session) {
     
     # load user availability data, if any, into schedule
     if(input$ou_email %in% available_df$ou_email){
-    Sys.sleep(2)
-    available_df <<- ss %>%
-      gs_read_csv(ws = "available") %>%
+    # Sys.sleep(2)
+    available_df <<- available_df %>%
+    # available_df <<- ss %>%
+    #   gs_read_csv(ws = "available") %>%
       filter(hour==input$timeslot,
              ou_email==input$ou_email) %>%
       filter(sequence==max(sequence))
@@ -179,6 +186,13 @@ shinyServer(function(input, output, session) {
   }) 
   
   observeEvent(input$submit_sched, {
+    
+    # tell the user to wait while we process
+    showModal(modalDialog(
+      title = "Just a moment while we process...",
+      easyClose = FALSE,footer = FALSE
+    ))
+    
     # add selections to googlesheet
     starts <- as_datetime(
       data.frame(
@@ -189,7 +203,7 @@ shinyServer(function(input, output, session) {
     
     hour(starts) <- as.numeric(input$timeslot)
     
-    if(nrow(available_df>0)) available_df_sequence <- unique(available_df$sequence)
+    if(nrow(available_df)>0) available_df_sequence <- unique(available_df$sequence)
     
     send_avail_df <- data.frame(
       ou_email = input$ou_email
@@ -199,6 +213,12 @@ shinyServer(function(input, output, session) {
       , end = starts + 60^2
     )
     gs_add_row(ss, ws = "available",input = send_avail_df)
+    
+    # available_df <<- ss %>%
+    #   gs_read_csv(ws = "available") 
+    
+    # remove loading message
+    removeModal()
     
     # tell the user they're changes are saved.
     showModal(modalDialog(
