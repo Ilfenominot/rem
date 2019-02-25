@@ -100,34 +100,7 @@ shinyServer(function(input, output, session) {
   }
   )
   
-  # observe({
-  #   # reset available_df every time timeslot is changed
-  #     # and/or every time data is submitted
-  #   input$timeslot
-  #   input$submit_sched
-  #   
-  #   available_df <- ss %>%
-  #       gs_read_csv(ws = "available") %>%
-  #       filter(hour==input$timeslot) %>%
-  #       filter(sequence==max(sequence))
-  # })
-  
   # Schedule tab ##################################################################################
-  
-  # available_df <- reactive({
-  #   # load user availability data, if any, into schedule
-  #   f_available_df <- f_available_df %>%
-  #     filter(ou_email==input$ou_email)
-  #   
-  #   if(input$ou_email %in% f_available_df$ou_email){
-  #     f_available_df <- f_available_df %>%
-  #       filter(hour==input$timeslot) %>%
-  #       filter(sequence==max(sequence))
-  #   } else {
-  #     available_df_sequence <- 0
-  #   }
-  #   f_available_df
-  #   })
   
   output$current_time <- renderText({
     invalidateLater(1000, session)
