@@ -25,7 +25,7 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
                     ,align = "right"
                     ,style="border-radius: 8px;
                       max-width: 100%;
-  height: auto;"))
+                      height: auto;"))
     )),
 
   tabPanel(
