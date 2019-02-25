@@ -55,6 +55,8 @@ shinyServer(function(input, output, session) {
     } else {
       showTab(inputId = "tabs", target = 'Schedule')
       showTab(inputId = "tabs", target = 'Analytics')
+      # sign out button that re-hides all tabs but sign_in
+      # showTab(inputId = "tabs", target = 'sign_out')
     }
   })
   
@@ -128,7 +130,7 @@ shinyServer(function(input, output, session) {
     }
     
     # identify which cells need to be colored
-    if(nrow(available_df>0)){
+    if(nrow(available_df)>0){
       pre_select <- data.frame(
         row_index = NA,
         col_index = NA
