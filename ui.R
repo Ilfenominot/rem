@@ -12,12 +12,21 @@ navbarPage(id = "tabs",
 title = p(strong("REM"),style=paste0("color:",ou_gold)),
   tabPanel(
     'Sign-In', icon = icon("user")
-    , textInput('ou_email',
-                'OU Email',
-                value = 'noahpollock@oakland.edu',
-                placeholder = 'example@oakland.edu')
-    , actionButton("sign_in", "Sign-In / Sign-Up")
-    ),
+    , sidebarLayout(
+      sidebarPanel(
+      textInput('ou_email',
+                  'OU Email',
+                  value = 'noahpollock@oakland.edu',
+                  placeholder = 'example@oakland.edu')
+      , actionButton("sign_in", "Sign-In / Sign-Up")
+    )
+    , mainPanel(img(src='ou_tower_lg.png'
+                    ,alt="Elliott Tower at Oakland University"
+                    ,align = "right"
+                    ,style="border-radius: 8px;
+                      max-width: 100%;
+  height: auto;"))
+    )),
 
   tabPanel(
     'Schedule', icon = icon("calendar")
@@ -67,11 +76,11 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
         , " A production version would include a few more refinements such as approved data storage
         and retrieval methods, faster response times, and an easier user experience.
         Additionally, some advanced features could include Google Calendar integration and automated email reminders.")
-    , h3("Conversation suggestions")
-    , tags$li(
-      tags$ul("The Basics: How long have you been at OU? What do you like to do outside of work?")
-      , tags$ul("More Detailed: What are some exciting projects you've worked on?")
-      , tags$ul("Advanced Topics: Do you have an long term goals?")
+    , h3("Conversation Starters")
+    , tags$ul(
+      tags$li(tags$b("The Basics:")," How long have you been at OU? What do you like to do outside of work?")
+      , tags$li(tags$b("More Detailed:")," What are some exciting projects you've worked on?")
+      , tags$li(tags$b("Advanced Topics")," Do you have an long term goals?")
     )
     # , bookmarkButton()
     )))
