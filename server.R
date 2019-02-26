@@ -235,6 +235,62 @@ shinyServer(function(input, output, session) {
     ))
   })
 
+  # see scheduled subtab
+  output$scheduled_meets <- renderUI({
+    
+    variable_output <- lapply(sample_dates, function(i) {
+      
+      # convert to number because output name cannot include a datetime
+      n <- as.numeric(i)
+      name_t <- paste0("text1",n)
+      email_t <- paste0("text2",n)
+      phone_t <- paste0("text5",n)
+      title_t <- paste0("text3",n)
+      dept_t <- paste0("text4",n)
+      
+      box(title = i,
+          solidHeader = TRUE,
+          background = "blue",
+          width = 12
+          , column(6,
+                   tags$b("Name: "),textOutput(name_t)
+                   , tags$b("Email: "),textOutput(email_t)
+                   , tags$b("Phone: "),textOutput(phone_t)
+                   )
+          , column(6,
+                   tags$b("Job Title: "),textOutput(title_t)
+                   , tags$b("Department: "),textOutput(dept_t))
+          )
+      
+    })
+    local_reactive()
+    do.call(tagList, variable_output)
+  })
+  
+  local_reactive <- reactive({
+    for (i in sample_dates) {
+      local({
+        n <- as.numeric(i)
+        my_i <- i
+        name_t <- paste0("text1",n)
+        email_t <- paste0("text2",n)
+        phone_t <- paste0("text5",n)
+        title_t <- paste0("text3",n)
+        dept_t <- paste0("text4",n)
+        
+        sched_partner <- employee_df %>% 
+          filter(ou_email != input$ou_email) %>%
+          slice(sample(1:(nrow(employee_df)-1),1))
+        
+        output[[name_t]] <-  renderText(sched_partner$full_name)
+        output[[email_t]] <-  renderText(sched_partner$ou_email)
+        output[[phone_t]] <-  renderText(sched_partner$phone)
+        output[[title_t]] <-  renderText(sched_partner$title)
+        output[[dept_t]] <-  renderText(sched_partner$department)
+      })
+    }
+  })
+  
   # Analytics tab ##################################################################################
   output$analytics_dt = DT::renderDataTable({
     tdata <- date_df %>% 
