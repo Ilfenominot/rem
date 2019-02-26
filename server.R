@@ -19,20 +19,6 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  observeEvent(input$tabs,{
-    if(input$tabs == "out") {
-      hideTab(inputId = "tabs", target = 'Schedule')
-      hideTab(inputId = "tabs", target = 'Analytics')
-      hideTab(inputId = "tabs", target = 'out')
-      showTab(inputId = "tabs", target = 'Sign-In')
-      updateNavbarPage(session, "tabs", selected = "Sign-In")
-      showModal(modalDialog(
-        title = div(icon("check"),style = "color: green;"," You have signed out!"),
-        easyClose = TRUE
-        ))
-    }
-  })
-  
   # prepopulate user details if user exists
   observe({
     input$sign_in
@@ -103,15 +89,15 @@ shinyServer(function(input, output, session) {
     }
     
     # load user availability data, if any, into schedule
-    available_df <<- available_df %>%
-      filter(ou_email==input$ou_email)
-    if(input$ou_email %in% available_df$ou_email){
-      available_df <<- available_df %>%
-        filter(hour==input$timeslot) %>%
-        filter(sequence==max(sequence))
-    } else {
-      available_df_sequence <<- 0
-    }
+    available_df <<- ss %>%
+      gs_read_csv(ws = "available") %>%
+      filter(hour==input$timeslot,
+             ou_email==input$ou_email) %>%
+      filter(sequence==max(sequence))
+    
+    # init at 0
+    available_df_sequence <<- 0
+      
     # change tabs
     updateTabsetPanel(session, "tabs", "Schedule")
     # and close the modal window
@@ -212,6 +198,8 @@ shinyServer(function(input, output, session) {
             select(-month,-abb,-week_of_year))[input$calendar_dt_cells_selected]
         ,tz = "EST"
       )
+      starts <- starts[!is.na(starts)] # when a selection outside of dates is made
+      
       hour(starts) <- as.numeric(input$timeslot)
       ends <- starts + 60^2
       
@@ -220,7 +208,7 @@ shinyServer(function(input, output, session) {
       ends <- ""
     }
     
-    if(nrow(available_df)>0) available_df_sequence <- unique(available_df$sequence)
+    if(nrow(available_df)>0) available_df_sequence <- max(available_df$sequence)
     
     send_avail_df <- data.frame(
       ou_email = input$ou_email
@@ -374,7 +362,25 @@ shinyServer(function(input, output, session) {
   
   # Help tab ########################################################################################
   
-  # show Random Employee Meetup, move, mingle
+  
+  # Sign-Out tab ######################################################################################
+  observeEvent(input$tabs,{
+    if(input$tabs == "out") {
+      hideTab(inputId = "tabs", target = 'Schedule')
+      hideTab(inputId = "tabs", target = 'Analytics')
+      hideTab(inputId = "tabs", target = 'out')
+      showTab(inputId = "tabs", target = 'Sign-In')
+      updateNavbarPage(session, "tabs", selected = "Sign-In")
+      showModal(modalDialog(
+        title = div(icon("check"),style = "color: green;"," You have signed out!"),
+        easyClose = TRUE
+      ))
+    }
+  })
+  
+
+  
+# DONE
 
   # TESTING #########################################################
   
