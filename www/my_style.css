@@ -1,3 +1,8 @@
+/* styles for entire app */
+body {
+  font-family: Helvetica;
+}
+
 /* datatable selected */
 table.dataTable tr.selected td, 
 table.dataTable td.selected {
@@ -15,7 +20,7 @@ table.dataTable {
 }
 
 table.dataTable, td{
-  border: 3px solid #B69A5B;
+  border: 3px solid #B69A5B; /* ou gold */
 }
 
 /* Lines after major Headers */
@@ -30,4 +35,24 @@ h2{
 h3{
   border-bottom:1px solid #CCC;
   padding-bottom:3px;
+}
+
+
+/* simple footer to style with a <div>id="site-footer"</div> */
+/* could define ellaborate footer in footer.html */
+/* would like to keep footer low on page when content is minimal */
+#site-footer {
+  margin-top: 50px; /* space between content and footer */
+	background: #B69A5B center no-repeat;
+	border-top: 3px solid black;
+	text-align: left;
+	vertical-align: middle;
+	-moz-background-size: cover;
+	-webkit-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;  
+  padding-top: 25px; 
+  padding-bottom: 5%; 
+  padding-left: 5%;
+  box-shadow: 0 50vh 0 50vh #B69A5B;
 }
