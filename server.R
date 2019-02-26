@@ -26,6 +26,10 @@ shinyServer(function(input, output, session) {
       hideTab(inputId = "tabs", target = 'out')
       showTab(inputId = "tabs", target = 'Sign-In')
       updateNavbarPage(session, "tabs", selected = "Sign-In")
+      showModal(modalDialog(
+        title = div(icon("check"),style = "color: green;"," You have signed out!"),
+        easyClose = TRUE
+        ))
     }
   })
   
