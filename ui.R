@@ -70,8 +70,12 @@ navbarPage(id = "tabs",
            )
          )
       )),
-      tabPanel("See Scheduled Meetups", 
-               fluidRow(uiOutput("scheduled_meets")))
+      tabPanel("See My Scheduled Meetups", 
+               fluidPage(fluidRow(
+                 p("This feature is still in development. 
+                   The schedule presented is not yet tied to your identified availability. 
+                   Eventually, meetups will only be schedule within Time Slots that you identified as being available."),
+                 uiOutput("scheduled_meets"))))
   )),
 
   tabPanel(
