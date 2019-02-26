@@ -1,5 +1,6 @@
 #global
 
+library(shinydashboard) # just for some aesthetics eg box()
 library(shiny)
 library(DT)
 library(dplyr)
@@ -9,11 +10,6 @@ library(shinythemes)
 library(googlesheets)
 
 # setup: https://github.com/jennybc/googlesheets/blob/master/inst/shiny-examples/10_read-write-private-sheet/global.R
-# shiny_token <- gs_auth() # authenticate w/ your desired Google identity here
-# saveRDS(shiny_token, "shiny_app_token.rds")
-# ss <- gs_new("10_read-write-private-sheet",
-#              row_extent = n, col_extent = n, input = filler)
-# ss$sheet_key # 10kYZGTfXquVUwvBXH-8M-p01csXN6MNuuTzxnDdy3Pk
 
 # # NEED TO UNCOMMENT WHEN READY TO CALL GOOGLESHEETS!!!!!!!!!!
 # connect to Google Sheets worksheet ##########################################
@@ -46,6 +42,8 @@ month_df <- data.frame(
 
 # will eventually be a function pulling dates for current term
 dates_in_term_seq <- seq(as.Date("2019-01-01"),as.Date("2019-04-30"),by=1)
+
+sample_dates <- sort(sample(as_datetime(dates_in_term_seq,tz="EST") + (60*60*17),6))
 
 # date_df should end before spreading
 # this should be calendar_df
