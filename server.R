@@ -11,11 +11,6 @@ shinyServer(function(input, output, session) {
       hideTab(inputId = "tabs", target = 'Schedule')
       hideTab(inputId = "tabs", target = 'Analytics')
       hideTab(inputId = "tabs", target = 'out')
-    } else {
-      hideTab(inputId = "tabs", target = 'Sign-In')
-      showTab(inputId = "tabs", target = 'Schedule')
-      showTab(inputId = "tabs", target = 'Analytics')
-      showTab(inputId = "tabs", target = 'out')
     }
   })
   
@@ -65,6 +60,11 @@ shinyServer(function(input, output, session) {
   
   # events/actions when user confirms their id and details
   observeEvent(input$confirm_id, { 
+    
+    hideTab(inputId = "tabs", target = 'Sign-In')
+    showTab(inputId = "tabs", target = 'Schedule')
+    showTab(inputId = "tabs", target = 'Analytics')
+    showTab(inputId = "tabs", target = 'out')
     
     # round-up user details
     user_details <- c(
