@@ -13,9 +13,21 @@ navbarPage(id = "tabs",
       sidebarPanel(
       textInput('ou_email',
                   'OU Email',
-                  value = 'noahpollock@oakland.edu',
+                  # value = 'noahpollock@oakland.edu', # predefined value for testing
                   placeholder = 'example@oakland.edu')
       , actionButton("sign_in", "Sign-In / Sign-Up")
+      , br(),br()
+      , box(width = 12,collapsible = FALSE, collapsed = FALSE,
+            title = "Site Administrator",
+            p(strong("Name: "),"Noah Pollock"),
+            p(strong("Email: "),"noahpollock@oakland.edu"))
+      , box(width = 12,collapsible = FALSE, collapsed = FALSE,
+            title = "Data Policy",
+            p("The data entered on this site is retained in a private Google Sheet and is 
+            used exclusively for providing access to and maintaining the full functionality of this site. 
+            Data entered is never deliberately shared or distributed beyond individual users gaining access. 
+            Please contact the Site Administrator for more information or to request that 
+            your data be deleted."))
     )
     , mainPanel(img(src='ou_tower_lg.png'
                     ,alt="Elliott Tower at Oakland University"
