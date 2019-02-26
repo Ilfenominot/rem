@@ -10,11 +10,22 @@ shinyServer(function(input, output, session) {
     if(input$sign_in == 0 | is.null(input$sign_in)){
       hideTab(inputId = "tabs", target = 'Schedule')
       hideTab(inputId = "tabs", target = 'Analytics')
+      hideTab(inputId = "tabs", target = 'out')
     } else {
+      hideTab(inputId = "tabs", target = 'Sign-In')
       showTab(inputId = "tabs", target = 'Schedule')
       showTab(inputId = "tabs", target = 'Analytics')
-      # sign out button that re-hides all tabs but sign_in
-      # showTab(inputId = "tabs", target = 'sign_out')
+      showTab(inputId = "tabs", target = 'out')
+    }
+  })
+  
+  observeEvent(input$tabs,{
+    if(input$tabs == "out") {
+      hideTab(inputId = "tabs", target = 'Schedule')
+      hideTab(inputId = "tabs", target = 'Analytics')
+      hideTab(inputId = "tabs", target = 'out')
+      showTab(inputId = "tabs", target = 'Sign-In')
+      updateNavbarPage(session, "tabs", selected = "Sign-In")
     }
   })
   

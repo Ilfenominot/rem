@@ -86,5 +86,6 @@ navbarPage(id = "tabs",
       , tags$li(tags$b("Advanced Topics")," Do you have an long term goals?")
     )
     )))
+  , tabPanel('Sign-Out',value = "out",icon = icon("sign-out"),tags$style("float: right;"))
 )
   ))
