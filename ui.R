@@ -62,9 +62,7 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
            )
          )
       )),
-      tabPanel("See Scheduled Meetups"
-               # , shinydashboard::box(title = "Monday, Feb 01 at 11:00 AM")
-               )
+      tabPanel("See Scheduled Meetups", uiOutput("scheduled_meets"))
   )),
 
   tabPanel(
