@@ -32,12 +32,11 @@ navbarPage(id = "tabs",
       , fluidPage(
          sidebarLayout(
            sidebarPanel(width=3
-            , selectInput("timeslot", label="Timeslot",
+            , selectInput("timeslot", label="Time Slot",
                          choices = list("11:00 - 12:00" = 11, "12:00 - 1:00" = 12, "1:00 - 2:00" = 13), 
                          selected = 12)
-            , p("Choose all the days that you are available to meet other OU faculty or staff during the selected timeslot.",
-                " If you add days in a timeslot, make sure you click submit before changing timeslots or you will lose
-                your selections.")
+            , p("Choose all the days that you are available to meet other OU faculty or staff during the selected Time Slot.",
+                " Be sure to click Submit to save your selections!")
              # , textOutput("current_time")
              # , selectInput('easy_workdays',
              #             'Weekday(s)',
@@ -59,7 +58,8 @@ navbarPage(id = "tabs",
            )
          )
       )),
-      tabPanel("See Scheduled Meetups", uiOutput("scheduled_meets"))
+      tabPanel("See Scheduled Meetups", 
+               fluidRow(uiOutput("scheduled_meets")))
   )),
 
   tabPanel(
