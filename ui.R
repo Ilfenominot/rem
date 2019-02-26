@@ -1,15 +1,12 @@
-
-
-# Define UI for application that draws a histogram
+# START
 shinyUI(
-  fluidPage( # can I move this out of a fluidpage?
-    # tags$style(HTML('table.dataTable tr.selected td, table.dataTable td.selected {background-color: pink !important;}')),
-    tags$link(rel = "stylesheet", type = "text/css", href = "my_style.css"),
-    tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Roboto:300italic,400,700"),
-    style="font-family: 'Roboto';",
+  tagList(
+  tags$link(rel = "stylesheet", type = "text/css", href = "my_style.css"),
 navbarPage(id = "tabs",
   theme = shinytheme("cosmo"),
-title = p(strong("REM"),style=paste0("color:",ou_gold)),
+  title = p(strong("REM"),style=paste0("color:",ou_gold)),
+  windowTitle = "REM",
+  footer = div(id="site-footer"),
   tabPanel(
     'Sign-In', icon = icon("user")
     , sidebarLayout(
@@ -88,8 +85,6 @@ title = p(strong("REM"),style=paste0("color:",ou_gold)),
       , tags$li(tags$b("More Detailed:")," What are some exciting projects you've worked on?")
       , tags$li(tags$b("Advanced Topics")," Do you have an long term goals?")
     )
-    # , bookmarkButton()
     )))
 )
-)
-  )
+  ))
