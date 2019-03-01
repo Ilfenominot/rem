@@ -63,6 +63,7 @@ shinyServer(function(input, output, session) {
     
     hideTab(inputId = "tabs", target = 'Sign-In')
     showTab(inputId = "tabs", target = 'Schedule')
+    updateNavbarPage(session, "tabs", selected = "Schedule")
     showTab(inputId = "tabs", target = 'Analytics')
     showTab(inputId = "tabs", target = 'out')
     
@@ -366,11 +367,18 @@ shinyServer(function(input, output, session) {
   # Sign-Out tab ######################################################################################
   observeEvent(input$tabs,{
     if(input$tabs == "out") {
+      # hide/unhide relevant tabs
       hideTab(inputId = "tabs", target = 'Schedule')
       hideTab(inputId = "tabs", target = 'Analytics')
       hideTab(inputId = "tabs", target = 'out')
       showTab(inputId = "tabs", target = 'Sign-In')
       updateNavbarPage(session, "tabs", selected = "Sign-In")
+      
+      # re-load employee list
+      employee_df <<- ss %>%
+        gs_read_csv(ws = "employee") %>%
+        mutate(employee_index = 1:n())
+      
       showModal(modalDialog(
         title = div(icon("check"),style = "color: green;"," You have signed out!"),
         easyClose = TRUE
