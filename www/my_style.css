@@ -20,12 +20,12 @@ table.dataTable {
 }
 
 table.dataTable, td{
-  border: 3px solid #B69A5B; /* ou gold */
+  border: 3px solid #0168ae; /* c_1 */
 }
 
 /* Lines after major Headers */
 h1{
-  border-bottom:5px solid #B69A5B; /* ou gold */
+  border-bottom:5px solid #0168ae; /* c_1 */
   padding-bottom:2px;
 }
 h2{
@@ -43,7 +43,7 @@ h3{
 /* would like to keep footer low on page when content is minimal */
 #site-footer {
   margin-top: 50px; /* space between content and footer */
-	background: #B69A5B center no-repeat;
+	background: #0168ae center no-repeat; /* c_1 */
 	border-top: 3px solid black;
 	text-align: left;
 	vertical-align: middle;
@@ -54,5 +54,5 @@ h3{
   padding-top: 25px; 
   padding-bottom: 5%; 
   padding-left: 5%;
-  box-shadow: 0 50vh 0 50vh #B69A5B;
+  box-shadow: 0 50vh 0 50vh #0168ae;
 }

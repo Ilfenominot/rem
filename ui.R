@@ -4,7 +4,7 @@ shinyUI(
   tags$link(rel = "stylesheet", type = "text/css", href = "my_style.css"),
 navbarPage(id = "tabs",
   theme = shinytheme("cosmo"),
-  title = p(strong("REM"),style=paste0("color:",ou_gold)),
+  title = p(strong("REM"),style=paste0("color:",c_1)),
   windowTitle = "REM",
   footer = div(id="site-footer"),
   tabPanel(
@@ -12,15 +12,15 @@ navbarPage(id = "tabs",
     , sidebarLayout(
       sidebarPanel(
       textInput('ou_email',
-                  'OU Email',
-                  # value = 'noahpollock@oakland.edu', # predefined value for testing
-                  placeholder = 'example@oakland.edu')
+                  'Company Email',
+                  # value = 'noahpollock@mycompany.com', # predefined value for testing
+                  placeholder = 'example@mycompany.com')
       , actionButton("sign_in", "Sign-In / Sign-Up")
       , br(),br()
       , box(width = 12,collapsible = FALSE, collapsed = FALSE,
             title = "Site Administrator",
             p(strong("Name: "),"Noah Pollock"),
-            p(strong("Email: "),"noahpollock@oakland.edu"))
+            p(strong("Email: "),"noahpollock@mycompany.com"))
       , box(width = 12,collapsible = FALSE, collapsed = FALSE,
             title = "Data Policy",
             p("The data entered on this site is retained in a private Google Sheet and is 
@@ -29,12 +29,18 @@ navbarPage(id = "tabs",
             Please contact the Site Administrator for more information or to request that 
             your data be deleted."))
     )
-    , mainPanel(img(src='ou_tower_lg.png'
-                    ,alt="Elliott Tower at Oakland University"
-                    ,align = "right"
-                    ,style="border-radius: 8px;
-                      max-width: 100%;
-                      height: auto;"))
+    # , mainPanel(img(src='ou_tower_lg.png'
+    #                 ,alt="Logo for the REM app."
+    #                 ,align = "right"
+    #                 ,style="border-radius: 8px;
+    #                   max-width: 100%;
+    #                   height: auto;"))
+    , mainPanel(splitLayout(div(p("Random.",br()
+                    ,"Employee.",br()
+                    ,"Meetup.",br(),style=paste0("color:",c_1,";font-size: 200%; font-wieght: bold;"))
+                    ,p("Mix. Mingle.",style=paste0("color:",c_1,";"))
+                    ,align = "left")
+                    ,p(icon("connectdevelop",class = "fa-10x"))))
     )),
 
   tabPanel(
@@ -90,14 +96,13 @@ navbarPage(id = "tabs",
     'About/Help', icon = icon("question-circle"),
     fluidPage(
       fluidRow(
-    h1("Grand Idea Submission")
-    , p("This web application serves as a functional prototype to showcase my grand idea submission."
-        , " A production version would include a few more refinements such as approved data storage
-        and retrieval methods, faster response times, and an easier user experience.
-        Additionally, some advanced features could include Google Calendar integration and automated email reminders.")
+    h1("What is this?")
+    , p("This web application helps you connect with other employees at ",organization,"."
+        ," By identifying your general availability over the next few months, you will be randomly paired
+        with another employee to meetup on a specific day based exclusively upon shared availability.")
     , h3("Conversation Starters")
     , tags$ul(
-      tags$li(tags$b("The Basics:")," How long have you been at OU? What do you like to do outside of work?")
+      tags$li(tags$b("The Basics:")," How long have you worked here? What do you like to do outside of work?")
       , tags$li(tags$b("More Detailed:")," What are some exciting projects you've worked on?")
       , tags$li(tags$b("Advanced Topics")," Do you have an long term goals?")
     )

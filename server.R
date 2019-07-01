@@ -32,8 +32,8 @@ shinyServer(function(input, output, session) {
   # get and set user details
   observeEvent(input$sign_in, {
     
-    # if contains @oakland.edu
-    if(grepl("@oakland.edu",input$ou_email)){
+    # if contains @mycompany.com
+    if(grepl("@mycompany.com",input$ou_email)){
     showModal(modalDialog(
       title = "Enter or Confirm Your Details",
       textInput('full_name',
@@ -41,7 +41,7 @@ shinyServer(function(input, output, session) {
                 placeholder = 'Your Name'),
       textInput('phone',
                 'Phone',
-                placeholder = '248-370-####'),
+                placeholder = '123-456-1234'),
       textInput('job_title',
                 'Job Title',
                 placeholder = 'Your Job Title'),
@@ -53,7 +53,7 @@ shinyServer(function(input, output, session) {
     ))
     } else {
       showModal(modalDialog(
-        title = tags$b("You must enter a valid OU Email!",style="color:red;")
+        title = tags$b("You must enter a valid ",organization," Email!",style="color:red;")
       ))
     }
   })
@@ -176,7 +176,7 @@ shinyServer(function(input, output, session) {
       ) %>%
       formatStyle('abb'
                   ,fontWeight = 'bold'
-                  ,backgroundColor = ou_gold) %>%
+                  ,backgroundColor = c_1) %>%
       formatStyle(names(tdata)
                   ,fontSize = '14pt')
   }) 
@@ -347,7 +347,7 @@ shinyServer(function(input, output, session) {
       ) %>%
       formatStyle('abb'
                   ,fontWeight = 'bold'
-                  ,backgroundColor = ou_gold) %>%
+                  ,backgroundColor = c_1) %>%
       formatStyle(names(tdata)
                   ,fontSize = '14pt') %>%
     formatStyle(workdays,paste0(workdays,1),

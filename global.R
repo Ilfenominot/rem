@@ -1,4 +1,23 @@
 #global
+# set parameters to brand
+
+organization <- "Example Company, LLC"
+
+#color pallette
+v_light_tan <- '#EEEBD8' # or for print... '#EEEBD8'
+med_tan <- '#E1D6B8'
+ou_tan <- '#EFE8E2'
+ou_light_gold <- '#d9c89e' # or for print... '#DFD3B5'
+ou_gold <- '#B69A5B' # or for print... '#B59A57'
+c_1 <- "#0168ae" # blue
+v_light_gray <- '#a3a3a3'
+v_v_light_gray <- '#cdcdcd'
+med_gray <- '#696969' #"#808080"
+v_dark_gray <- '#323232' #'#252525'
+ou_brown <- '#5e504d'
+ou_light_brown <- '#776a67'
+
+#
 
 library(shinydashboard) # just for some aesthetics eg box()
 library(shiny)
@@ -86,21 +105,8 @@ date_df_full <- data.frame(
   spread(weekday,date)
 
 
-#color pallette
-v_light_tan <- '#EEEBD8' # or for print... '#EEEBD8'
-med_tan <- '#E1D6B8'
-ou_tan <- '#EFE8E2'
-ou_light_gold <- '#d9c89e' # or for print... '#DFD3B5'
-ou_gold <- '#B69A5B' # or for print... '#B59A57'
-v_light_gray <- '#a3a3a3'
-v_v_light_gray <- '#cdcdcd'
-med_gray <- '#696969' #"#808080"
-v_dark_gray <- '#323232' #'#252525'
-ou_brown <- '#5e504d'
-ou_light_brown <- '#776a67'
-
 # styles
-ou_line_style <- HTML(paste0("color: ",ou_gold,";background-color: ",ou_gold, ";height:10px;"))
+ou_line_style <- HTML(paste0("color: ",c_1,";background-color: ",c_1, ";height:10px;"))
 
 col_format <- JS(
   "function(settings, json) {",
